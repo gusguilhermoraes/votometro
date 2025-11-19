@@ -1,6 +1,9 @@
 # Votometro
 Projeto de desenvolvimento de aplicativo de pesquisa de candidatos das eleições brasileiras e acompanhamento do trabalho parlamentar
 
+# Logotipo
+<img alt="Logotipo do Votômetro" src="/Logotipo/Logotipo - Votometro.png" />
+
 # Objetivo geral
 Desenvolver um aplicativo para pesquisa, análise e escolha de candidatos nas eleições e para fortalecimento da participação popular nos temas parlamentares fora do período eleitoral.
 
