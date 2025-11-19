@@ -2,7 +2,14 @@
 Projeto de desenvolvimento de aplicativo de pesquisa de candidatos das eleições brasileiras e acompanhamento do trabalho parlamentar
 
 # Logotipo
-<img alt="Logotipo do Votômetro" src="/Logotipo/Logotipo - Votometro.png" />
+<img alt="Logotipo do Votômetro" src="/Logotipo/Logotipo - Votometro - Menor.png" />
+
+# Integrantes do projeto
+- Gustavo Guilherme de Moraes
+- Lucas Fernando Mendes de Almeida
+
+# Data de criação do projeto
+11/08/2025
 
 # Objetivo geral
 Desenvolver um aplicativo para pesquisa, análise e escolha de candidatos nas eleições e para fortalecimento da participação popular nos temas parlamentares fora do período eleitoral.
@@ -29,13 +36,25 @@ Para a parte da programação e desenvolvimento dos sistemas, será utilizado o 
 Para coletar os dados relacionados, o sistema consumirá as APIs do TSE e de órgãos legislativos, como a Câmara dos Deputados e o Senado Federal. Para além dessas fontes, também haverá coleta de dados de jornais e redes sociais, visando levantar notícias e propostas dos candidatos. Após a coleta, os dados passarão por um processo de tratamento, para conferência de veracidade, e também organização, visando facilitar a leitura pelo usuário final.
 O sistema de banco de dados do projeto será desenvolvido usando a plataforma Firebase, visando armazenar os dados persistentes necessários para o funcionamento do aplicativo, incluindo informações de candidatos e parlamentares, notícias, promessas de campanha, projetos de lei, entre outros.
 
-
-# Composição do grupo do projeto
-- Gustavo Guilherme de Moraes
-- Lucas Fernando Mendes de Almeida
-
 # Alinhamento com ODS
 Em relação aos Objetivos de Desenvolvimento Sustentável da Organização das Nações Unidas, o projeto se alinha com a ODS 16, o objetivo de alcançar Paz, Justiça e Instituições Eficazes. Essa ligação ocorre devido ao propósito do aplicativo em ajudar os cidadãos na escolha de seus representantes, o que levaria as instituições a se tornarem mais próximas do povo, assim, aumentando a sua eficácia.
+
+# Design do software 
+O projeto será desenvolvido usando conceitos de Design Centrado no Usuário, visando desenvolver um aplicativo acessível e de fácil uso. As telas de políticos, candidatos e projetos serão acessíveis com poucos toques na tela.
+
+# Persona
+Com base nos resultados do formulário de pesquisa, foi formulado a persona de um usuário médio do Votômetro: Maria.
+Mais informações sobre a persona podem ser conferidas em: [Persona](/Persona - Votometro.pdf)
+
+# Storyboard
+A partir da persona desenvolvida e dos casos de uso planejados do aplicativo, foi desenvolvido um storyboard que mostra o uso prático do Votômetro.
+Mais informações sobre o storyboard podem ser conferidas em: [Storyboard](/Storyboard/Storyboard - Votometro.pdf)
+
+# UI Design (guia de estilo)
+O protótipo do aplicativo foi desenvolvido usando a plataforma Figma. Ele usará as cores da bandeira do Brasil como estilo de plano de fundo (verde: #009440; amarelo: #ffcb00).
+
+# Protótipo
+O protótipo do aplicativo pode ser acessado em: [Protótipo](https://www.figma.com/proto/cnACOIzrx8xnG3JlUbXXom/Votometro?node-id=0-1&t=47jg256w5Mcc846J-1)
 
 # Licenças de uso
 GNU General Public License v3.0
