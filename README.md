@@ -11,11 +11,21 @@ Posteriormente a eleição, o aplicativo deverá mostrar o trabalho do candidato
 Nessa temática, o acompanhamento das promessas de campanha se constitui como uma importante ferramenta. Atualmente, existem poucas formas práticas de acompanhar se as propostas feitas nas eleições foram cumpridas ou não, com destaque para o monitoramento “As promessas dos políticos”, feito pelo G1, focado no acompanhamento de promessas de campanha de prefeitos de capitais. O Votômetro exibirá, na tela de perfil do político, as suas promessas feitas em campanha, coletadas tanto dos documentos oficiais de plano de governo disponibilizados pelo TSE quanto de entrevistas e declarações em redes sociais. Com base nessa lista e nos demais dados fornecidos pelo aplicativo, o eleitor poderá julgar se o plano apresentado na eleição está sendo cumprido ou não.
 
 # Escopo
+- O sistema deve permitir o cadastro de usuários
+- O sistema deve permitir o cadastro de projetos
+- O sistema deve atender ou fornecer os devidos parâmetros para as API’s utilizadas
+- O sistema deve permitir que o usuário realize pesquisas de candidatos, políticos ou projetos
+- O sistema deve emitir relatórios
 
 # Publico alvo
 O público alvo do aplicativo são os eleitores que buscam informações para definir o candidato que irá escolher. Esse grupo inclui pessoas de diversas classes e grupos sociais diferentes, todos com o mesmo objetivo de definir suas escolhas eleitorais e votar na esperança de gerar mudanças na cidade, estado e país onde vivem, e também acompanhar o trabalho parlamentar e entrar em contato com eles para pressionar por mudanças.
 
 # Descrição do projeto
+No contexto eleitoral brasileiro atual, muitos eleitores enfrentam dificuldades na hora de votar e acompanhar o trabalho dos seus candidatos eleitos. Esses obstáculos, como informação fragmentada e, muitas vezes, difícil de se encontrar, influenciam em altas taxas de indecisão eleitoral, com muitos eleitores deixando para escolher o candidato apenas no dia da eleição. Visando resolver esse problema, o aplicativo Votômetro traz a ideia de pesquisa filtrada e personalizada de candidatos, comparação de projetos, acompanhamento de informações sobre o trabalho político pós-eleição, entre outros. Com isso, espera-se que o projeto se torne uma importante ferramenta de auxílio ao cidadão, garantindo o voto com confiança e reforçando a participação popular na política cotidiana.
+Para a parte da programação e desenvolvimento dos sistemas, será utilizado o programa Visual Studio Code, juntamente com a linguagem de programação React Native, que permitirá o desenvolvimento multiplataforma do aplicativo. A etapa de testes será realizada usando o Android Studio, que permite a execução do aplicativo desenvolvido, emulando um dispositivo móvel. Após os testes serem realizados e ser atestado o funcionamento correto do código desenvolvido, ele será publicado na plataforma GitHub.
+Para coletar os dados relacionados, o sistema consumirá as APIs do TSE e de órgãos legislativos, como a Câmara dos Deputados e o Senado Federal. Para além dessas fontes, também haverá coleta de dados de jornais e redes sociais, visando levantar notícias e propostas dos candidatos. Após a coleta, os dados passarão por um processo de tratamento, para conferência de veracidade, e também organização, visando facilitar a leitura pelo usuário final.
+O sistema de banco de dados do projeto será desenvolvido usando a plataforma Firebase, visando armazenar os dados persistentes necessários para o funcionamento do aplicativo, incluindo informações de candidatos e parlamentares, notícias, promessas de campanha, projetos de lei, entre outros.
+
 
 # Composição do grupo do projeto
 - Gustavo Guilherme de Moraes
