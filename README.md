@@ -47,11 +47,12 @@ O projeto será desenvolvido usando conceitos de Design Centrado no Usuário, vi
 
 ## Persona
 Com base nos resultados do formulário de pesquisa, foi formulado a persona de um usuário médio do Votômetro: Maria.
-Mais informações sobre a persona podem ser conferidas em: [Persona](/Persona - Votometro.pdf)
+Mais informações sobre a persona podem ser conferidas em: <a href="Persona - Votometro.pdf">Persona</a>
 
 ## Storyboard
 A partir da persona desenvolvida e dos casos de uso planejados do aplicativo, foi desenvolvido um storyboard que mostra o uso prático do Votômetro.
-Mais informações sobre o storyboard podem ser conferidas em: [Storyboard](/Storyboard/Storyboard - Votometro.pdf)
+Mais informações sobre o storyboard podem ser conferidas em: <a href="Storyboard/Storyboard - Votometro.pdf">Storyboard</a>
+
 
 ## UI Design (guia de estilo)
 O protótipo do aplicativo foi desenvolvido usando a plataforma Figma. Ele usará as cores da bandeira do Brasil como estilo de plano de fundo (verde: #009440; amarelo: #ffcb00).
