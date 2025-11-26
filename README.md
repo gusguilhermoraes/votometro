@@ -60,6 +60,9 @@ O protótipo do aplicativo foi desenvolvido usando a plataforma Figma. Ele usar�
 ## Protótipo
 O protótipo do aplicativo pode ser acessado em: [Protótipo](https://www.figma.com/proto/cnACOIzrx8xnG3JlUbXXom/Votometro?node-id=0-1&t=47jg256w5Mcc846J-1)
 
+## Plano de testes
+O plano de testes do aplicativo deverá englobar as funções de pesquisa e busca de informações. Os testes deverão verificar se a pesquisa funciona da forma correta e se as informações associadas ao político/candidato/projeto acessado pelo usuário estão sendo corretamente coletadas do banco de dados/APIs.
+
 # 4. Desenvolvimento
 
 ## Modelo de processo de software
