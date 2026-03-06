@@ -98,3 +98,6 @@ O público alvo do aplicativo são os eleitores que buscam informações para de
 
 ## Alinhamento com ODS
 Em relação aos Objetivos de Desenvolvimento Sustentável da Organização das Nações Unidas, o projeto se alinha com a ODS 16, o objetivo de alcançar Paz, Justiça e Instituições Eficazes. Essa ligação ocorre devido ao propósito do aplicativo em ajudar os cidadãos na escolha de seus representantes, o que levaria as instituições a se tornarem mais próximas do povo, assim, aumentando a sua eficácia.
+
+## Roadmap e Sprints
+A Roadmap e as Sprints do projeto podem ser acessadas em: [Roadmap e Sprints](https://docs.google.com/spreadsheets/d/1naE30BWek96qDYCVhL4GVW1m316e6ec2gaRwZ_3lt7M/edit?usp=sharing)
