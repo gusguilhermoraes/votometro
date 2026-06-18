@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { db } from '../../firebaseconfig';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { Card, Avatar } from 'react-native-paper';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function ResultadosParlamentares() {
   const router = useRouter();
@@ -12,11 +13,12 @@ export default function ResultadosParlamentares() {
   const [parlamentares, setParlamentares] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 1. ESTABILIZAÇÃO: Transformamos os params em uma string estável no TOPO do componente
   const filtroChave = useMemo(() => JSON.stringify(params), [params]);
 
+  const { tema, coresAtuais } = useTheme();
+  
   useEffect(() => {
-    let montado = true;
+    let isMounted = true; // Renomeado e unificado para segurança síncrona
 
     const buscar = async () => {
       try {
@@ -24,7 +26,6 @@ export default function ResultadosParlamentares() {
         let ref = collection(db, 'parlamentar');
         let constraints = [];
 
-        // Filtros de Query do Firestore
         if (params.partido) constraints.push(where('partidoId', '==', params.partido));
         if (params.cargo) constraints.push(where('cargo', '==', params.cargo));
         if (params.local) constraints.push(where('local', '==', params.local));
@@ -35,38 +36,36 @@ export default function ResultadosParlamentares() {
         
         let lista = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        // 2. FILTRO DE NOME: Feito manualmente no código (Client-side)
         if (params.nome) {
           const termo = (params.nome as string).toLowerCase();
           lista = lista.filter(p => p.nome?.toLowerCase().includes(termo));
         }
 
-        if (montado) {
+        if (isMounted) {
           setParlamentares(lista);
         }
       } catch (e) {
         console.error("Erro na busca:", e);
       } finally {
-        if (montado) setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     buscar();
 
-    // Função de limpeza para evitar o "memory leak" e a piscada
-    return () => { montado = false; };
-  }, [filtroChave]); // 3. DEPENDÊNCIA: Usamos a string estável aqui
+    return () => { isMounted = false; };
+  }, [filtroChave]);
 
   if (loading) {
     return (
-      <View style={[styles.container, styles.center]}>
-        <ActivityIndicator size="large" color="#fff" />
+      <View style={[styles.container, styles.center, { backgroundColor: coresAtuais.primariaVerde }]}>
+        <ActivityIndicator size="large" color="#ffffff" />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: coresAtuais.primariaVerde }]}>
       <FlatList
         data={parlamentares}
         keyExtractor={(item) => item.id}
@@ -101,8 +100,22 @@ export default function ResultadosParlamentares() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#009440' }, // Fundo verde constante
-  center: { justifyContent: 'center', alignItems: 'center' },
-  card: { margin: 10, backgroundColor: '#fff', borderRadius: 10 },
-  empty: { textAlign: 'center', marginTop: 20, color: '#fff', fontWeight: 'bold' }
+  container: { 
+    flex: 1 
+  }, // Fundo verde constante
+  center: { 
+    justifyContent: 'center', 
+    alignItems: 'center' 
+  },
+  card: { 
+    margin: 10, 
+    backgroundColor: '#fff', 
+    borderRadius: 10 
+  },
+  empty: { 
+    textAlign: 'center', 
+    marginTop: 20, 
+    color: '#fff', 
+    fontWeight: 'bold' 
+  }
 });

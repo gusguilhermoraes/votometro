@@ -4,6 +4,7 @@ import { useLocalSearchParams, Stack } from 'expo-router';
 import { db } from '../../../../firebaseconfig';
 import { doc, getDoc } from 'firebase/firestore';
 import { Card, Button } from 'react-native-paper';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function DetalheProposta() {
   const { candidatoId, propostaId } = useLocalSearchParams();
@@ -11,36 +12,44 @@ export default function DetalheProposta() {
   const [proposta, setProposta] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const buscarProposta = async () => {
-    try {
-      setLoading(true);
-
-      const ref = doc(
-        db,
-        `candidatos/${candidatoId}/propostas/${propostaId}`
-      );
-
-      const snap = await getDoc(ref);
-
-      if (snap.exists()) {
-        setProposta(snap.data());
-      }
-
-    } catch (error) {
-      console.error('Erro ao buscar proposta:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { coresAtuais } = useTheme();
 
   useEffect(() => {
+    let isMounted = true; // Trava de concorrência inicializada
+
+    const buscarProposta = async () => {
+      try {
+        setLoading(true);
+        const ref = doc(
+          db,
+          `candidatos/${candidatoId}/propostas/${propostaId}`
+        );
+
+        const snap = await getDoc(ref);
+
+        if (snap.exists() && isMounted) {
+          setProposta(snap.data());
+        }
+      } catch (error) {
+        console.error('Erro ao buscar proposta:', error);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
     if (candidatoId && propostaId) {
       buscarProposta();
     }
+
+    return () => {
+      isMounted = false; // Desativa re-renders se o usuário voltar para a lista
+    };
   }, [candidatoId, propostaId]);
 
   if (loading) {
-    return <ActivityIndicator style={{ marginTop: 50 }} />;
+    return <ActivityIndicator style={{ marginTop: 50 }} size="large" color="#fff" />;
   }
 
   if (!proposta) {
@@ -53,13 +62,13 @@ export default function DetalheProposta() {
       options={{ 
         title: `Proposta`, // Aqui você usa o ID no título
         headerStyle: {
-          backgroundColor: "#009440",
+          backgroundColor: coresAtuais.primariaVerde
         },
-        headerTintColor: "black",
+        headerTintColor: coresAtuais.texto,
         headerTitleAlign: "center",
       }} 
     />
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: coresAtuais.primariaVerde }]}>
 
       <Card style={styles.card}>
 

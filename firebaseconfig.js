@@ -1,17 +1,18 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeAuth, getReactNativePersistence, GoogleAuthProvider, OAuthProvider } from 'firebase/auth';
+import { initializeFirestore, memoryLocalCache } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB_KbkmNFiW2UfnhlkmTHiKucVr9oitT3k",
-  authDomain: "votometro-adad1.firebaseapp.com",
-  projectId: "votometro-adad1",
-  storageBucket: "votometro-adad1.firebasestorage.app",
-  messagingSenderId: "723191179552",
-  appId: "1:723191179552:web:d5a1098cf40c79c4e80f45",
-  measurementId: "G-WXCJJNTNVM"
+  apiKey: process.env.EXPO_PUBLIC_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_PROJECT_ID,
+  storageBucket: process.env.EXPO_PUBLIC_STORAGE_BUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_MESSAGING_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_APP_ID,
+  measurementId: process.env.EXPO_PUBLIC_MEASUREMENT_ID
 };
 
 // Initialize Firebase
@@ -22,6 +23,12 @@ const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(AsyncStorage)
 });
 
-const db = getFirestore(app, 'votometrobd');
+export const db = initializeFirestore(app, {
+  localCache: memoryLocalCache()
+}, 'votometrobd');
 
-export { app, auth, db };
+const storage = getStorage();
+
+export const googleProvider = new GoogleAuthProvider();
+
+export { app, auth, storage };

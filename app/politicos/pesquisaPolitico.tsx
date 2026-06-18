@@ -1,44 +1,95 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Animated } from 'react-native';
 import { db } from '../../firebaseconfig';
 import { collection, getDocs } from 'firebase/firestore';
-import { Picker } from '@react-native-picker/picker';
-import { Button, Chip, Searchbar } from 'react-native-paper';
+import DropDownPicker from 'react-native-dropdown-picker';
+import { Button, Chip, Searchbar, Snackbar } from 'react-native-paper';
 import { useRouter } from 'expo-router';
+import { useTheme } from '@/context/ThemeContext';
+import * as Haptics from 'expo-haptics';
 
 export default function PesquisaParlamentar() {
   const router = useRouter();
   const [listas, setListas] = useState({ partidos: [], cargos: [], locais: [], formacoes: [] });
   const [filtros, setFiltros] = useState({ nome: '', partido: '', cargo: '', local: '', formacao: '', genero: '' });
+  const [loading, setLoading] = useState(true);
+  const [snackbarVisivel, setSnackbarVisivel] = useState(false);
+
+  const [openPartido, setOpenPartido] = useState(false);
+  const [openCargo, setOpenCargo] = useState(false);
+  const [openLocal, setOpenLocal] = useState(false);
+  const [openFormacao, setOpenFormacao] = useState(false);
+  const [openGenero, setOpenGenero] = useState(false);
+
+  const shakeAnimation = useRef(new Animated.Value(0)).current;
+
+  const { tema, coresAtuais } = useTheme();
+  const isDarkMode = tema === 'escuro';
 
   useEffect(() => {
+    let isMounted = true; // Trava de segurança para desmontagem
+
     const carregarFiltros = async () => {
-      const snapPartidos = await getDocs(collection(db, 'partidos'));
-      const listaPartidos = snapPartidos.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      try {
+        // Otimização de Cache: Se já tiver dados na lista global, pula a leitura do Firebase
+        if (listas.partidos.length > 0) {
+          setLoading(false);
+          return;
+        }
 
-      const snapParlamentar = await getDocs(collection(db, 'parlamentar'));
-      const dados = snapParlamentar.docs.map(doc => doc.data());
+        const snapPartidos = await getDocs(collection(db, 'partidos'));
+        const listaPartidos = snapPartidos.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-      setListas({
-        partidos: listaPartidos,
-        cargos: [...new Set(dados.map(d => d.cargo))].filter(Boolean),
-        locais: [...new Set(dados.map(d => d.local))].filter(Boolean),
-        formacoes: [...new Set(dados.map(d => d.formacao))].filter(Boolean),
-      });
+        const snapParlamentar = await getDocs(collection(db, 'parlamentar'));
+        const dados = snapParlamentar.docs.map(doc => doc.data());
+
+        if (isMounted) {
+          setListas({
+            partidos: listaPartidos,
+            cargos: [...new Set(dados.map(d => d.cargo))].filter(Boolean),
+            locais: [...new Set(dados.map(d => d.local))].filter(Boolean),
+            formacoes: [...new Set(dados.map(d => d.formacao))].filter(Boolean),
+          });
+        }
+      } catch (error) {
+        console.error("Erro ao carregar políticos:", error);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
     };
+
     carregarFiltros();
+
+    return () => {
+      isMounted = false; // Cancela atualizações órfãs
+    };
   }, []);
+
+  // Função que executa o "Chacoalhar" estilo Telegram
+  const dispararShake = () => {
+    // Sequência rápida de idas e voltas no eixo X
+    Animated.sequence([
+      Animated.timing(shakeAnimation, { toValue: 10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: -10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: 10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: -10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: 0, duration: 50, useNativeDriver: true }),
+    ]).start();
+  };  
 
   const handlePesquisar = () => {
     const temFiltro =
       filtros.nome?.trim() ||
       filtros.partido ||
       filtros.cargo ||
+      filtros.formacao ||
       filtros.genero ||
       filtros.local?.trim();
   
     if (!temFiltro) {
-      Alert.alert('Atenção', 'Selecione pelo menos um filtro');
+      dispararShake();          // Ativa o feedback visual de erro na tela
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);  // Faz o celular vibrar
+      setSnackbarVisivel(true); // Exibe o popup elegante vindo de baixo
       return;
     }
   
@@ -49,71 +100,145 @@ export default function PesquisaParlamentar() {
         partido: filtros.partido || '',
         cargo: filtros.cargo || '',
         local: filtros.local || '',
+        formacao: filtros.formacao || '',
         genero: filtros.genero || ''
       }
     });
   };
 
+  // Renderização condicional para a animação de carregamento
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: coresAtuais.primariaVerde }]}>
+        <ActivityIndicator size="large" color="#ffffff" />
+        <Text style={{ color: '#fff', marginTop: 10 }}>Carregando filtros...</Text>
+      </View>
+    );
+  }
+
+  const itensPartidos = listas.partidos.map(p => ({ label: `${p.sigla} - ${p.nome}`, value: p.id, key: p.id }));
+  const itensCargos = listas.cargos.map(c => ({ label: c, value: c, key: c }));
+  const itensLocais = listas.locais.map(l => ({ label: l, value: l, key: l }));
+  const itensFormacoes = listas.formacoes.map(l => ({ label: l, value: l, key: l }));
+  const itensGenero = [
+    { label: 'Masculino', value: 'Masculino', key: 'M' },
+    { label: 'Feminino', value: 'Feminino', key: 'F' }
+  ];
+
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.label}>Nome</Text>
-      <Searchbar
-        placeholder="Nome do candidato"
-        value={filtros.nome}
-        onChangeText={(t) => setFiltros({ ...filtros, nome: t })}
-        style={styles.searchBar}
-      />
+    <View style={{ flex: 1, backgroundColor: coresAtuais.primariaVerde }}>
+      <Animated.ScrollView 
+        style={[styles.container, { transform: [{ translateX: shakeAnimation }] }]}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
+        <Text style={styles.label}>Nome</Text>
+        <Searchbar
+          placeholder="Nome do candidato"
+          value={filtros.nome}
+          onChangeText={(t) => setFiltros({ ...filtros, nome: t })}
+          style={styles.searchBar}
+        />
 
-      <Text style={styles.label}>Partido</Text>
-      <View style={styles.seletor}>
-        <Picker
-          selectedValue={filtros.partido}
-          onValueChange={(v) => setFiltros({ ...filtros, partido: v })}
-        >
-          <Picker.Item label="Todos os Partidos" value="" />
-          {listas.partidos.map(p => (
-            <Picker.Item key={p.id} label={`${p.sigla} - ${p.nome}`} value={p.id} />
-          ))}
-        </Picker>
-      </View>
+        <Text style={styles.label}>Partido</Text>
+        <DropDownPicker
+          open={openPartido}
+          value={filtros.partido}
+          items={itensPartidos}
+          setOpen={setOpenPartido}
+          setValue={(callback) => setFiltros(prev => ({ ...prev, partido: callback(prev.partido) }))}
+          placeholder="Todos os Partidos"
+          style={styles.dropdown}
+          dropDownContainerStyle={styles.dropdownContainer}
+          zIndex={openPartido ? 1000 : 1}
+          listMode="SCROLLVIEW"
+        />
 
-      <Text style={styles.label}>Cargo</Text>
-      <View style={styles.seletor}>
-        <Picker selectedValue={filtros.cargo} onValueChange={(v) => setFiltros({ ...filtros, cargo: v })}>
-          <Picker.Item label="Todos os cargos" value="" />
-          {listas.cargos.map(c => <Picker.Item key={c} label={c} value={c} />)}
-        </Picker>
-      </View>
+        <Text style={styles.label}>Cargo</Text>
+        <DropDownPicker
+          open={openCargo}
+          value={filtros.cargo}
+          items={itensCargos}
+          setOpen={setOpenCargo}
+          setValue={(callback) => setFiltros(prev => ({ ...prev, cargo: callback(prev.cargo) }))}
+          placeholder="Todos os Cargos"
+          style={styles.dropdown}
+          dropDownContainerStyle={styles.dropdownContainer}
+          zIndex={openCargo ? 1000 : 1}
+          listMode="SCROLLVIEW"
+        />
 
-      <Text style={styles.label}>Estado/Local</Text>
-      <View style={styles.seletor}>
-        <Picker selectedValue={filtros.local} onValueChange={(v) => setFiltros({ ...filtros, local: v })}>
-          <Picker.Item label="Todos os locais" value="" />
-          {listas.locais.map(l => <Picker.Item key={l} label={l} value={l} />)}
-        </Picker>
-      </View>
+        <Text style={styles.label}>Estado/Local</Text>
+        <DropDownPicker
+          open={openLocal}
+          value={filtros.local}
+          items={itensLocais}
+          setOpen={setOpenLocal}
+          setValue={(callback) => setFiltros(prev => ({ ...prev, local: callback(prev.local) }))}
+          placeholder="Todos os Estados"
+          style={styles.dropdown}
+          dropDownContainerStyle={styles.dropdownContainer}
+          zIndex={openLocal ? 1000 : 1}
+          listMode="SCROLLVIEW"
+        />
 
-      <Text style={styles.label}>Gênero</Text>
-      <View style={styles.seletor}>
-        <Picker selectedValue={filtros.genero} onValueChange={(v) => setFiltros({ ...filtros, genero: v })}>
-          <Picker.Item label="Todos" value="" />
-          <Picker.Item label="Masculino" value="Masculino" />
-          <Picker.Item label="Feminino" value="Feminino" />
-        </Picker>
-      </View>
+        <Text style={styles.label}>Formação</Text>
+        <DropDownPicker
+          open={openFormacao}
+          value={filtros.formacao}
+          items={itensFormacoes}
+          setOpen={setOpenFormacao}
+          setValue={(callback) => setFiltros(prev => ({ ...prev, formacao: callback(prev.formacao) }))}
+          placeholder="Todos as Formações"
+          style={styles.dropdown}
+          dropDownContainerStyle={styles.dropdownContainer}
+          zIndex={openFormacao ? 1000 : 1}
+          listMode="SCROLLVIEW"
+        />
 
-      <Button mode="contained" onPress={handlePesquisar} style={styles.btnPesquisar}>
-        Pesquisar
-      </Button>
-    </ScrollView>
+        <Text style={styles.label}>Gênero</Text>
+        <DropDownPicker
+          open={openGenero}
+          value={filtros.genero}
+          items={itensGenero}
+          setOpen={setOpenGenero}
+          setValue={(callback) => setFiltros(prev => ({ ...prev, genero: callback(prev.genero) }))}
+          placeholder="Selecione o gênero"
+          style={styles.dropdown}
+          dropDownContainerStyle={styles.dropdownContainer}
+          zIndex={openGenero ? 1000 : 1}
+          listMode="SCROLLVIEW"
+        />
+
+        <Button mode="contained" onPress={handlePesquisar} style={styles.btnPesquisar}>
+          Pesquisar
+        </Button>
+      </Animated.ScrollView>
+
+      <Snackbar
+        visible={snackbarVisivel}
+        onDismiss={() => setSnackbarVisivel(false)}
+        duration={3000}
+        style={[
+          styles.snackbar, 
+          { backgroundColor: coresAtuais.snackbarFundo },
+          isDarkMode && styles.snackbarNeonBorder
+        ]}
+        action={{
+          label: 'OK',
+          textColor: '#ff5252',
+          onPress: () => setSnackbarVisivel(false),
+        }}
+      >
+        <Text style={[styles.snackbarText, { color: coresAtuais.snackbarTexto }]}>Atenção: Selecione pelo menos um filtro para pesquisar.</Text>
+      </Snackbar>      
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    padding: 20, 
-    backgroundColor: '#009440' 
+    padding: 20 
   },
   label: { 
     color: '#fff', 
@@ -134,4 +259,38 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     marginTop: 8
   },
+  dropdown: { 
+    backgroundColor: '#ffffff', 
+    borderRadius: 25, 
+    borderWidth: 0, 
+    height: 50 
+  },
+  dropdownContainer: { 
+    backgroundColor: '#ffffff', 
+    borderRadius: 15, 
+    borderWidth: 1, 
+    borderColor: '#eee' 
+  },
+  snackbar: {
+    backgroundColor: '#2b2b2b', // Cor escura do Telegram
+    borderRadius: 12,
+    position: 'absolute',       // Garante que ele flutue fixo na base
+    bottom: 20,                 // Distância do final da tela
+    left: 15,
+    right: 15,
+    elevation: 4,               // Sombra no Android
+  },
+  snackbarText: {
+    color: '#fff',
+    fontWeight: '500',
+  },
+  snackbarNeonBorder: {
+    borderWidth: 0.8,           // Borda bem pequena/fina
+    borderColor: '#91dbd6',
+    // Opcional: Adiciona um leve brilho no Android/iOS se desejar
+    shadowColor: '#91dbd6',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+  }
 });

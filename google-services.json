@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "723191179552",
+    "project_id": "votometro-adad1",
+    "storage_bucket": "votometro-adad1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:723191179552:android:3c3b01336c0fbee1e80f45",
+        "android_client_info": {
+          "package_name": "com.gusguilhermoraes.votometro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "723191179552-hg8bjpcmgs8v21m4fhctfrkmbkc78ma8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5XDSyaEqxPPen1pCeXhhMtpbrw43aomQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "723191179552-hg8bjpcmgs8v21m4fhctfrkmbkc78ma8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

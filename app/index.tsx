@@ -1,9 +1,6 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
 import Splashscreen from "./splash";
 import Welcome from "./welcome";
-import { useEffect, useState } from "react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export default function App() {
     const [isShowSplash, setIsShowSplash] = useState(true);

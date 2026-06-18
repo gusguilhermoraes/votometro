@@ -1,7 +1,10 @@
 import { Stack } from "expo-router";
 import React from "react";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function RootLayout() {
+  const { coresAtuais } = useTheme();
+
   return (
     <Stack>
       <Stack.Screen
@@ -9,9 +12,9 @@ export default function RootLayout() {
         options={{
           title: 'Pesquisa de Projetos',
           headerStyle: {
-            backgroundColor: "#009440",
+            backgroundColor: coresAtuais.primariaVerde,
           },
-          headerTintColor: "black",
+          headerTintColor: "#ffffff",
           headerTitleAlign: "center",
         }}
       />
@@ -20,9 +23,9 @@ export default function RootLayout() {
         options={{
           title: 'Resultados',
           headerStyle: {
-            backgroundColor: "#009440",
+            backgroundColor: coresAtuais.primariaVerde,
           },
-          headerTintColor: "black",
+          headerTintColor: "#ffffff",
           headerTitleAlign: "center",
         }}
       />

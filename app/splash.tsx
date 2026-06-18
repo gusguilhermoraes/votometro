@@ -1,9 +1,14 @@
 import React, { useEffect, useRef } from "react";
 import { Animated, StyleSheet, View, Image } from "react-native";
+import { useTheme } from '@/context/ThemeContext';
 
-const Logo = require("../assets/images/logo-splash.png");
+const LogoLight = require("../assets/images/logo-splash.png");
+const LogoDark = require("../assets/images/logo-splash-dark.png");
 
 export default function Splashscreen() {
+  const { tema, coresAtuais } = useTheme();
+  const isDarkMode = tema === 'escuro';
+
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -15,9 +20,9 @@ export default function Splashscreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: coresAtuais.primariaVerde }]}>
       <Animated.Image
-        source={Logo}
+        source={isDarkMode ? LogoDark : LogoLight}
         style={[styles.image, { opacity: fadeAnim }]}
       />
     </View>
@@ -27,7 +32,6 @@ export default function Splashscreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#009440",
     justifyContent: "center",
     alignItems: "center",
   },
