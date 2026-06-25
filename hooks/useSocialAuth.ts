@@ -43,10 +43,10 @@ export function useSocialAuth() {
         router.push({
           pathname: '/cadastro-social',
           params: {
-            uid: user.uid,
             email: user.email ?? '',
             username: user.displayName ?? '',
             provider: providerName,
+            photo: user.photoURL ?? '',
           },
         });
       }

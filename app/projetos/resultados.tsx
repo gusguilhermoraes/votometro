@@ -49,9 +49,13 @@ export default function ResultadosProjetos() {
           );
         }
 
+        // Alinhando a filtragem para usar o ID do político e o nome correto do campo no banco
         if (autor) {
           lista = lista.filter(p => 
-            p.autores && Object.values(p.autores).some((a: any) => a.nome === autor)
+            // 1. Garante que 'autores' existe no documento (plural, conforme imagem do console)
+            p.autores && 
+            // 2. Transforma as propriedades { autor1, autor2 } em um array e busca pelo idPolitico
+            Object.values(p.autores).some((a: any) => a.idPolitico === autor)
           );
         }
 

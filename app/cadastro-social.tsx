@@ -10,13 +10,13 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Feather } from '@expo/vector-icons';
 import { useTheme } from '@/context/ThemeContext';
+import { cores } from '@/constants/colors';
 
 export default function CadastroSocial() {
   const router = useRouter();
   
   // Recebe o idToken do Google em vez do uid direto
-  const { idToken, email, username, provider, photo } = useLocalSearchParams<{
-    idToken: string;
+  const { email, username, provider, photo } = useLocalSearchParams<{
     email: string;
     username: string;
     provider: string;
@@ -68,50 +68,47 @@ export default function CadastroSocial() {
   ];
 
   const handleFinalizarCadastro = async () => {
-    if (!sexo || !anoNascimento || !estado) {
-      Alert.alert('Erro', 'Por favor, selecione todas as informações.');
-      return;
-    }
+  if (!sexo || !anoNascimento || !estado) {
+    Alert.alert('Erro', 'Por favor, selecione todas as informações.');
+    return;
+  }
 
-    setLoading(true);
+  setLoading(true);
     try {
-      // 1. Autentica o usuário no Firebase Auth usando o token do Google
-      const credential = GoogleAuthProvider.credential(idToken);
-      const userCredential = await signInWithCredential(auth, credential);
-      const user = userCredential.user;
+      // 1. Pega o usuário já autenticado na sessão do Firebase
+      const user = auth.currentUser;
 
-      let fotoFinalUrl = photo || ''; // URL padrão caso falte a foto
+      if (!user) {
+        Alert.alert('Erro', 'Sessão de usuário não encontrada. Faça login novamente.');
+        router.replace('/login');
+        return;
+      }
+
+      let fotoFinalUrl = photo || ''; 
 
       // 2. Se o Google retornou uma foto, faz o processo de upload para o Storage
       if (photo) {
         try {
-          // Baixa a imagem da URL do Google como um Blob binário
           const response = await fetch(photo);
           const blob = await response.blob();
           
-          // Cria a referência do arquivo no Storage: "fotos_perfil/ID_DO_USUARIO.jpg"
           const storageRef = ref(storage, `fotos_perfil/${user.uid}.jpg`);
-
-          // Faz o upload do blob para o Storage
           await uploadBytes(storageRef, blob);
-
-          // Pega a URL definitiva de download de dentro do seu Firebase Storage
           fotoFinalUrl = await getDownloadURL(storageRef);
         } catch (storageError) {
           console.log("Erro ao salvar foto no Storage, usando URL original:", storageError);
-          // Se falhar o Storage por regras de segurança ou rede, mantém a URL original do Google para não travar o cadastro
           fotoFinalUrl = photo; 
         }
       }
 
-      // 3. Salva o perfil completo no Firestore
+      // 3. Salva o perfil completo no Firestore usando o UID do usuário atual
       await setDoc(doc(db, 'usuarios', user.uid), {
         username: username,
         email: email,
         sexo: sexo,
         ano_nascimento: parseInt(anoNascimento, 10),
         estado_moradia: estado,
-        foto_perfil: fotoFinalUrl, // <-- Aqui vai a URL do seu Firebase Storage!
+        foto_perfil: fotoFinalUrl, 
         data_criacao: new Date().toISOString(),
         tipo: 'comum',
         provider: provider,
@@ -198,8 +195,8 @@ export default function CadastroSocial() {
                 onPress={handleFinalizarCadastro}
                 loading={loading}
                 disabled={loading}
-                style={styles.botaoRegistrar}
-                labelStyle={{ fontSize: 16, color: '#FFF', fontFamily: 'Urbanist_600SemiBold' }}
+                style={[styles.botaoRegistrar, { backgroundColor: coresAtuais.buttonLogin }]}
+                labelStyle={{ fontSize: 16, color: coresAtuais.textoBranco, fontFamily: 'Urbanist_600SemiBold' }}
               >
                 Criar minha conta
               </Button>
@@ -344,7 +341,6 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: 12,
     justifyContent: 'center',
-    backgroundColor: '#1e232c',
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

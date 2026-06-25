@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Animated } from 'react-native';
 import { db } from '../../firebaseconfig';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Button, Chip, Searchbar, Snackbar } from 'react-native-paper';
 import { useRouter } from 'expo-router';
@@ -35,47 +35,63 @@ export default function PesquisaProjetosAvancada() {
   useEffect(() => {
     let isMounted = true;
 
-    const carregarDadosProjeto = async () => {
+    const carregarDadosProjetoMetadados = async () => {
       try {
-        // Otimização de Cache: Se já houver anos processados, pula a leitura do Firebase
+        // Otimização de Cache: Se já houver dados carregados, pula o processo
         if (listas.anos.length > 0) {
           setLoading(false);
           return;
         }
 
-        const snapProjetos = await getDocs(collection(db, 'projeto'));
-        const dadosProjetos = snapProjetos.docs.map(doc => doc.data());
+        // 1. BUSCA O DOCUMENTO DE METADADOS DOS PROJETOS (Substituindo a leitura da coleção completa)
+        const docRef = doc(db, 'metadados', 'filtrosProjetos');
+        const snapMetadados = await getDoc(docRef);
 
-        const todosAutores = dadosProjetos.flatMap(p => 
-          p.autores ? Object.values(p.autores).map(a => a.nome) : []
-        );
+        if (snapMetadados.exists() && isMounted) {
+          const dadosFiltros = snapMetadados.data();
 
-        const todasAreas = dadosProjetos.flatMap(p => p.areaTematica || []);
-        const todosTemas = dadosProjetos.flatMap(p => p.tema || []);
+          // Função para strings normais
+          const ordenarStrings = (array: any[]) => {
+            return (array || []).slice().sort((a, b) => a.toString().localeCompare(b.toString(), 'pt-BR'));
+          };
 
-        if (isMounted) {
+          // Função específica para ordenar o array de objetos 'autor' pelo nomePolitico
+          const ordenarAutores = (array: any[]) => {
+            return (array || []).slice().sort((a, b) => {
+              const nomeA = a?.nomePolitico || '';
+              const nomeB = b?.nomePolitico || '';
+              return nomeA.localeCompare(nomeB, 'pt-BR');
+            });
+          };
+
+          const ordenarAnosReverso = (array: any[]) => {
+            return (array || []).slice().sort((a, b) => b.toString().localeCompare(a.toString()));
+          };
+
           setListas({
-            anos: [...new Set(dadosProjetos.map(p => p.ano))].filter(Boolean).sort(),
-            estado: [...new Set(dadosProjetos.map(p => p.estado))].filter(Boolean).sort(),
-            orgaos: [...new Set(dadosProjetos.map(p => p.orgao))].filter(Boolean),
-            autores: [...new Set(todosAutores)].filter(Boolean).sort(),
-            areasTematicas: [...new Set(todasAreas)].filter(Boolean),
-            temas: [...new Set(todosTemas)].filter(Boolean),
+            anos: ordenarAnosReverso(dadosFiltros.ano),
+            orgaos: ordenarStrings(dadosFiltros.orgao),
+            areasTematicas: ordenarStrings(dadosFiltros.areaTematica),
+            temas: ordenarStrings(dadosFiltros.tema),
+            estado: ordenarStrings(dadosFiltros.status),
+            autores: ordenarAutores(dadosFiltros.autor), 
           });
+        } else {
+          console.warn("Documento filtrosProjetos não foi encontrado no Firestore.");
         }
       } catch (error) {
-        console.error("Erro ao carregar dados dos projetos:", error);
+        console.error("Erro ao carregar dados dos projetos via metadados:", error);
       } finally {
         if (isMounted) {
-          setLoading(false); // Garante que o loading termine de forma segura
+          setLoading(false);
         }
       }
     };
 
-    carregarDadosProjeto();
+    carregarDadosProjetoMetadados();
 
     return () => {
-      isMounted = false; // Libera referências ao sair da tela
+      isMounted = false;
     };
   }, []);
 
@@ -112,7 +128,11 @@ export default function PesquisaProjetosAvancada() {
     }
 
   const itensAnos = listas.anos.map(a => ({ label: a.toString(), value: a, key: a }));
-  const itensAutores = listas.autores.map(a => ({ label: a, value: a, key: a }));
+  const itensAutores = listas.autores.map(a => ({ 
+    label: a.nomePolitico,      // O que o usuário enxerga na lista
+    value: a.idPolitico,        // O ID que vai ser salvo no filtro e enviado na rota de busca
+    key: a.idPolitico           // Chave única para o React Native
+  }));
   const itensOrgaos = listas.orgaos.map(o => ({ label: o, value: o, key: o }));
   const itensTemas = listas.temas.map(t => ({ label: t, value: t, key: t }));
 

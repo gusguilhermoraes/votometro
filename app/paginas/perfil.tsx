@@ -44,7 +44,7 @@ export default function Perfil() {
   const isDarkMode = tema === 'escuro';
 
   // Estados principais
-  const [fotoPerfil, setFotoPerfil] = useState<string>(`https://i.pravatar.cc/150?u=${user?.uid || 'default'}`);
+  const [fotoPerfil, setFotoPerfil] = useState<string>(`https://firebasestorage.googleapis.com/v0/b/votometro-adad1.firebasestorage.app/o/fotos_perfil%2Fusuario_padrao.png?alt=media&token=621ae248-d53d-4f9d-8305-400703a059be`);
   const [iconeHome, setIconeHome] = useState<string>('default');
   const [carregandoFoto, setCarregandoFoto] = useState<boolean>(false);
 
@@ -104,7 +104,7 @@ export default function Perfil() {
       }
 
       const resultado = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'], //  Nova sintaxe aceita pelo Expo
         allowsEditing: true, 
         aspect: [1, 1],
         quality: 0.5, 
@@ -118,7 +118,7 @@ export default function Perfil() {
       const resposta = await fetch(uriLocal);
       const blob = await resposta.blob();
 
-      const storageRef = ref(storage, `perfis/${user.uid}.jpg`);
+      const storageRef = ref(storage, `fotos_perfil/${user.uid}`);
       await uploadBytes(storageRef, blob);
 
       const urlPublica = await getDownloadURL(storageRef);

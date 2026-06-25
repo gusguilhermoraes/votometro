@@ -63,7 +63,7 @@ export default function Home() {
   const nomeUsuario = user?.displayName || user?.email || 'Usuário';
 
   const [fotoPerfil, setFotoPerfil] = useState<string>(
-    `https://i.pravatar.cc/100?u=usuario}`
+    `https://firebasestorage.googleapis.com/v0/b/votometro-adad1.firebasestorage.app/o/fotos_perfil%2Fusuario_padrao.png?alt=media&token=621ae248-d53d-4f9d-8305-400703a059be`
   );
 
   const { tema, coresAtuais } = useTheme();
@@ -278,7 +278,8 @@ const styles = StyleSheet.create({
     borderRadius: 24 
   },
   welcome: { 
-    marginLeft: 12, 
+    marginLeft: 12,
+    marginRight: 20, 
     fontSize: 16, 
     fontWeight: '600' 
   },

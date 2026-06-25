@@ -2,14 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Alert, Image } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { db } from '../../firebaseconfig';
-import { doc, getDoc, onSnapshot, runTransaction } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot, collection, getDocs } from 'firebase/firestore';
 import { Card, Button } from 'react-native-paper';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { FontAwesome } from '@expo/vector-icons';
 import { useTheme } from '@/context/ThemeContext';
-import { cores } from '@/constants/colors';
 
 export default function DetalhesProjeto() {
   const { id } = useLocalSearchParams() as { id: string };
@@ -82,9 +81,7 @@ export default function DetalhesProjeto() {
 
     // === NOVA BUSCA EM TEMPO REAL: PARTIDOS E ORIENTAÇÕES ===
     const buscarDadosPartidos = async () => {
-      try {
-        const { collection, getDocs } = await import('firebase/firestore');
-        
+      try {        
         // 1. Busca todos os partidos cadastrados para pegarmos número, logo, etc.
         const partidosSnap = await getDocs(collection(db, 'partidos'));
         const listaPartidos = partidosSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -131,17 +128,32 @@ export default function DetalhesProjeto() {
       if (unsub) unsubscribeVotosPartidosObtida = unsub;
     });
 
-    // 3. Escuta em Tempo Real se o usuário logado já votou nesta enquete
-    let unsubscribeVoto = () => {};
+    // 3. Busca uma única vez se o usuário logado já votou nesta enquete (Sem onSnapshot na subcoleção)
     if (auth.currentUser) {
-      const votoRef = doc(db, 'projeto', id, 'votos', auth.currentUser.uid);
-      unsubscribeVoto = onSnapshot(votoRef, (votoSnap) => {
-        if (votoSnap.exists() && isMounted) {
-          setVotoUsuario(votoSnap.data().opcao);
-        } else if (isMounted) {
-          setVotoUsuario(null);
+      const verificarVotoInicial = async () => {
+        try {
+          await auth.currentUser.getIdToken(true);
+          const functions = obterInstanciaFunctions();
+          const obterPseudonimoFn = httpsCallable(functions, 'votes-obterMeuPseudonimodeVoto');
+          const resultado: any = await obterPseudonimoFn();
+          
+          const meuIdPseudonimoVoto = resultado.data.idPseudonimo;
+
+          if (meuIdPseudonimoVoto && isMounted) {
+            const votoRef = doc(db, 'projeto', id, 'votos', meuIdPseudonimoVoto);
+            // IMPORTANTE: getDoc não cria escuta contínua, logo não gera erro de permissão infinito
+            const votoSnap = await getDoc(votoRef);
+            
+            if (votoSnap.exists() && isMounted) {
+              setVotoUsuario(votoSnap.data().opcao);
+            }
+          }
+        } catch (error) {
+          console.error("Erro ao verificar voto inicial:", error);
         }
-      });
+      };
+
+      verificarVotoInicial();
     }
 
     // 4. Validação assíncrona dos favoritos
@@ -151,9 +163,8 @@ export default function DetalhesProjeto() {
 
     return () => {
       isMounted = false;
-      unsubscribeProjeto();
-      unsubscribeVoto();
-      if (unsubscribeVotosPartidosObtida) unsubscribeVotosPartidosObtida();
+      unsubscribeProjeto(); // Mantém (escuta a contagem global)
+      if (unsubscribeVotosPartidosObtida) unsubscribeVotosPartidosObtida(); // Mantém
     };
   }, [id, auth.currentUser]);
 
@@ -166,68 +177,18 @@ export default function DetalhesProjeto() {
 
     setLoadingVoto(true);
 
-    const projetoRef = doc(db, 'projeto', id);
-    const votoRef = doc(db, 'projeto', id, 'votos', auth.currentUser.uid);
-
-    // Mapeamento de campos para atualizar dinamicamente no banco
-    const mapearCampo = (op: string) => {
-      if (op === 'totalContra') return 'votosTotalContra';
-      if (op === 'parcialContra') return 'votosParcialContra';
-      if (op === 'parcialFavor') return 'votosParcialFavor';
-      if (op === 'totalFavor') return 'votosTotalFavor';
-      return 'votosTotalFavor'; // Fallback seguro
-    };
-
     try {
-      await runTransaction(db, async (transaction) => {
-        const projetoSnap = await transaction.get(projetoRef);
-        const votoSnap = await transaction.get(votoRef);
+      await auth.currentUser.getIdToken(true);
+      const functions = obterInstanciaFunctions();
+      const registrarVotoFn = httpsCallable(functions, 'votes-registrarVotoMapeado');
+      
+      await registrarVotoFn({ projetoId: id, opcaoSelecionada });
 
-        if (!projetoSnap.exists()) {
-          throw "Projeto não encontrado.";
-        }
+      // Atualiza o estado visual do botão localmente no app sem depender de regras do Firestore!
+      setVotoUsuario((votoAtual) => votoAtual === opcaoSelecionada ? null : opcaoSelecionada);
 
-        const dadosProjeto = projetoSnap.data();
-
-        // CASO 1: Usuário clicou na MESMA opção que já tinha votado (Quer remover o voto)
-        if (votoSnap.exists() && votoSnap.data().opcao === opcaoSelecionada) {
-          const campoDiminuir = mapearCampo(opcaoSelecionada);
-          const atualContagem = dadosProjeto[campoDiminuir] || 0;
-
-          transaction.set(projetoRef, { [campoDiminuir]: Math.max(0, atualContagem - 1) }, { merge: true });
-          transaction.delete(votoRef);
-          return;
-        }
-
-        // CASO 2: Usuário está MUDANDO de voto
-        if (votoSnap.exists() && votoSnap.data().opcao !== opcaoSelecionada) {
-          const opcaoAntiga = votoSnap.data().opcao;
-          const campoDiminuir = mapearCampo(opcaoAntiga);
-          const campoAumentar = mapearCampo(opcaoSelecionada);
-
-          const contagemAntiga = dadosProjeto[campoDiminuir] || 0;
-          const contagemNova = dadosProjeto[campoAumentar] || 0;
-
-          transaction.set(projetoRef, {
-            [campoDiminuir]: Math.max(0, contagemAntiga - 1),
-            [campoAumentar]: contagemNova + 1
-          }, { merge: true });
-          
-          transaction.set(votoRef, { opcao: opcaoSelecionada, alteradoEm: new Date() });
-          return;
-        }
-
-        // CASO 3: Novo voto (Primeira vez votando)
-        const campoAumentar = mapearCampo(opcaoSelecionada);
-        const contagemNova = dadosProjeto[campoAumentar] || 0;
-
-        transaction.set(projetoRef, { [campoAumentar]: contagemNova + 1 }, { merge: true });
-        transaction.set(votoRef, { opcao: opcaoSelecionada, criadoEm: new Date() });
-      });
-
-      // Feedback visual opcional de sucesso
     } catch (error) {
-      console.error("Erro na transação de voto:", error);
+      console.error("Erro ao registrar voto via Cloud Function:", error);
       Alert.alert("Erro", "Não foi possível registrar seu voto. Tente novamente.");
     } finally {
       setLoadingVoto(false);

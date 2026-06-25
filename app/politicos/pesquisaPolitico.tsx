@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Animated } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Animated } from 'react-native';
 import { db } from '../../firebaseconfig';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { Button, Chip, Searchbar, Snackbar } from 'react-native-paper';
+import { Button, Searchbar, Snackbar } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/context/ThemeContext';
 import * as Haptics from 'expo-haptics';
@@ -27,41 +27,54 @@ export default function PesquisaParlamentar() {
   const isDarkMode = tema === 'escuro';
 
   useEffect(() => {
-    let isMounted = true; // Trava de segurança para desmontagem
+    let isMounted = true;
 
-    const carregarFiltros = async () => {
+    const carregarFiltrosPoliticos = async () => {
       try {
-        // Otimização de Cache: Se já tiver dados na lista global, pula a leitura do Firebase
+        // Otimização de Cache local
         if (listas.partidos.length > 0) {
           setLoading(false);
           return;
         }
 
+        // 1. Busca os partidos (coleção separada)
         const snapPartidos = await getDocs(collection(db, 'partidos'));
         const listaPartidos = snapPartidos.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        const snapParlamentar = await getDocs(collection(db, 'parlamentar'));
-        const dados = snapParlamentar.docs.map(doc => doc.data());
+        // 2. BUSCA O NOVO DOCUMENTO DE METADADOS DOS PARLAMENTARES
+        const docRef = doc(db, 'metadados', 'filtrosParlamentares');
+        const snapMetadados = await getDoc(docRef);
 
-        if (isMounted) {
+        if (snapMetadados.exists() && isMounted) {
+          const dadosFiltros = snapMetadados.data();
+
+          // Função auxiliar para ordenar tratando acentos e caracteres especiais locais
+          const ordenar = (array: string[]) => {
+            return (array || []).slice().sort((a, b) => a.localeCompare(b, 'pt-BR'));
+          };
+
           setListas({
-            partidos: listaPartidos,
-            cargos: [...new Set(dados.map(d => d.cargo))].filter(Boolean),
-            locais: [...new Set(dados.map(d => d.local))].filter(Boolean),
-            formacoes: [...new Set(dados.map(d => d.formacao))].filter(Boolean),
+            partidos: listaPartidos, // Pode ordenar no mapeamento dos itens se desejar
+            cargos: ordenar(dadosFiltros.cargo),
+            locais: ordenar(dadosFiltros.local),
+            formacoes: ordenar(dadosFiltros.formacao),
+            // Se quiser usar a lista de gêneros vinda do banco futuramente, repare no 'G' maiúsculo:
+            // generos: ordenar(dadosFiltros['Gênero']) 
           });
+        } else {
+          console.warn("Documento filtrosParlamentares não foi encontrado.");
         }
       } catch (error) {
-        console.error("Erro ao carregar políticos:", error);
+        console.error("Erro ao carregar políticos via metadados:", error);
       } finally {
         if (isMounted) setLoading(false);
       }
     };
 
-    carregarFiltros();
+    carregarFiltrosPoliticos();
 
     return () => {
-      isMounted = false; // Cancela atualizações órfãs
+      isMounted = false;
     };
   }, []);
 

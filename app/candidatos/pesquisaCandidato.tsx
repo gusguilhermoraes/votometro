@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Animated } from 'react-native';
 import { db } from '../../firebaseconfig';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Button, Chip, Searchbar, Snackbar } from 'react-native-paper';
 import { useRouter } from 'expo-router';
@@ -36,41 +36,50 @@ export default function PesquisaAvancada() {
   const isDarkMode = tema === 'escuro';
 
   useEffect(() => {
-    let isMounted = true; // Trava de segurança para desmontagem
+    let isMounted = true;
 
     const carregarDadosFiltros = async () => {
       try {
-        // Otimização de Cache: Se já houver partidos carregados, evita nova chamada ao Firebase
+        // Otimização de Cache local
         if (listas.partidos.length > 0) {
           setLoading(false);
           return;
         }
 
+        // 1. Busca os partidos (continua igual, pois estão em coleção separada)
         const snapPartidos = await getDocs(collection(db, 'partidos'));
         const partidos = snapPartidos.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        const snapCandidatos = await getDocs(collection(db, 'candidatos'));
-        const dadosCands = snapCandidatos.docs.map(doc => doc.data());
+        // 2. BUSCA O DOCUMENTO DE METADADOS (Substituindo a leitura de candidatos)
+        const docRef = doc(db, 'metadados', 'filtrosCandidatos');
+        const snapMetadados = await getDoc(docRef);
 
-        const todosTemas = dadosCands.flatMap(c => c.temasResumo || []);
-        const temasUnicos = [...new Set(todosTemas)].filter(Boolean);
+        if (snapMetadados.exists() && isMounted) {
+          const dadosFiltros = snapMetadados.data();
 
-        if (isMounted) {
+          // Função auxiliar para ordenar tratando acentos locais
+          const ordenar = (array: string[]) => {
+            return (array || []).slice().sort((a, b) => a.localeCompare(b, 'pt-BR'));
+          };
+
           setListas({
             partidos,
-            cargos: [...new Set(dadosCands.map(c => c.cargo))].filter(Boolean),
-            cidades: [...new Set(dadosCands.map(c => c.localCargo))].filter(Boolean),
-            ocupacoes: [...new Set(dadosCands.map(c => c.ocupacao))].filter(Boolean),
-            formacoes: [...new Set(dadosCands.map(c => c.formacao))].filter(Boolean),
-            instrucoes: [...new Set(dadosCands.map(c => c.instrucao))].filter(Boolean),
-            temas: temasUnicos
+            cargos: ordenar(dadosFiltros.cargo),
+            cidades: ordenar(dadosFiltros.cidade),
+            ocupacoes: ordenar(dadosFiltros.ocupacao),
+            formacoes: ordenar(dadosFiltros.formacao),
+            instrucoes: ordenar(dadosFiltros.instrucao),
+            temas: ordenar(dadosFiltros.temas)
           });
+        } else {
+          console.warn("Documento de metadados não encontrado no Firestore.");
         }
+
       } catch (error) {
-        console.error("Erro ao carregar dados dos filtros de candidatos:", error);
+        console.error("Erro ao carregar dados dos filtros via metadados:", error);
       } finally {
         if (isMounted) {
-          setLoading(false); // Garante o encerramento do loading
+          setLoading(false);
         }
       }
     };
@@ -78,7 +87,7 @@ export default function PesquisaAvancada() {
     carregarDadosFiltros();
 
     return () => {
-      isMounted = false; // Cancela atualizações se o utilizador sair da tela
+      isMounted = false;
     };
   }, []);
 

@@ -47,7 +47,7 @@ export default function ResultadosCandidatos() {
         if (formacao) constraints.push(where('formacao', '==', formacao));
 
         if (temasArray.length > 0) {
-          constraints.push(where('temas_resumo', 'array-contains-any', temasArray));
+          constraints.push(where('temasResumo', 'array-contains-any', temasArray));
         }
 
         const q = constraints.length > 0 ? query(ref, ...constraints) : ref;
@@ -129,13 +129,13 @@ export default function ResultadosCandidatos() {
               left={() => (
                 <Avatar.Image
                   size={40}
-                  source={{ uri: item.fotoUrl || `https://i.pravatar.cc/100?u=${item?.genero || 'usuario'}` }}
+                  source={{ uri: item.fotoUrl || `https://firebasestorage.googleapis.com/v0/b/votometro-adad1.firebasestorage.app/o/fotos_perfil%2Fusuario_padrao.png?alt=media&token=621ae248-d53d-4f9d-8305-400703a059be` }}
                 />
               )}
             />
           </Card>
         )}
-        ListEmptyComponent={<Text style={styles.empty}>Nenhum resultado encontrado</Text>}
+        ListEmptyComponent={<Text style={[styles.empty, { color: coresAtuais.texto }]}>Nenhum resultado encontrado</Text>}
       />
   );
 }

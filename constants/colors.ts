@@ -4,6 +4,7 @@ export const cores = {
     card: '#FFFFFF',
     texto: '#2C3E50',
     textoSecundario: '#666666',
+    textoBranco: '#FFFFFF',
     
     // Suas cores originais do modo claro
     primariaVerde: '#009440',
@@ -22,6 +23,7 @@ export const cores = {
     card: '#2D3035',            // Um cinza ligeiramente mais claro para destacar os blocos e menus
     texto: '#FFFFFF',           // Branco puro para máxima legibilidade
     textoSecundario: '#9AA0A6', // Cinza azulado suave para subtítulos e descrições
+    textoBranco: '#000000',
 
     // Cores de Identidade Adaptadas à Urna Eletrônica Neon
     primariaVerde: '#1F2124',     // Substituído por um tom quase preto/grafite para os Headers, deixando o Neon brilhar

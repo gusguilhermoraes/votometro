@@ -85,7 +85,7 @@ export default function ResultadosParlamentares() {
               left={() => (
                 <Avatar.Image 
                   size={45} 
-                  source={{ uri: item.fotoUrl || 'https://via.placeholder.com/150' }} 
+                  source={{ uri: item.fotoUrl || 'https://firebasestorage.googleapis.com/v0/b/votometro-adad1.firebasestorage.app/o/fotos_perfil%2Fusuario_padrao.png?alt=media&token=621ae248-d53d-4f9d-8305-400703a059be' }} 
                 />
               )}
             />

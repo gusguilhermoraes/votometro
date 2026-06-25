@@ -173,7 +173,7 @@ export default function DetalhesParlamentar() {
       <Card style={styles.card}>
         <View style={styles.header}>
           <Image
-            source={{ uri: parlamentar.fotoUrl || `https://i.pravatar.cc/100?u=${parlamentar?.genero || 'usuario'}` }}
+            source={{ uri: parlamentar.fotoUrl || `https://firebasestorage.googleapis.com/v0/b/votometro-adad1.firebasestorage.app/o/fotos_perfil%2Fusuario_padrao.png?alt=media&token=621ae248-d53d-4f9d-8305-400703a059be` }}
             style={styles.avatar}
           />
           <View style={styles.headerText}>

@@ -181,7 +181,7 @@ export default function DetalhesCandidato() {
           <View style={styles.header}>
 
             <Image
-              source={{ uri: candidato.fotoUrl || `https://i.pravatar.cc/100?u=${candidato?.genero || 'usuario'}` }}
+              source={{ uri: candidato.fotoUrl || `https://firebasestorage.googleapis.com/v0/b/votometro-adad1.firebasestorage.app/o/fotos_perfil%2Fusuario_padrao.png?alt=media&token=621ae248-d53d-4f9d-8305-400703a059be` }}
               style={styles.avatar}
             />
 
