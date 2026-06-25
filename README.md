@@ -24,6 +24,7 @@ Siga os passos abaixo no seu terminal para rodar o projeto localmente:
 
 2. **Configurar as Variáveis de Ambiente:**
    Na raiz do projeto, faça uma cópia do arquivo ".env.example" e renomeie a cópia para ".env".
+   
    Abra o novo arquivo ".env" e substitua os campos "[insira aqui]" pelas suas respectivas chaves do Firebase/Expo.
 
 3. **Iniciar o aplicativo (Android):**
