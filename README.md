@@ -1,50 +1,27 @@
-# Welcome to your Expo app 👋
+# Votômetro
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Este repositório contém o código-fonte do aplicativo **Votômetro**, desenvolvido para a disciplina de **Projeto Interdisciplinar II**.
 
-## Get started
+Para consultar a documentação completa do projeto, acesse: [gusguilhermoraes/votometro-documentacao](https://github.com/gusguilhermoraes/votometro-documentacao)
 
-1. Install dependencies
+---
 
+## 📱 Como Usar (Usuário)
+
+Para realizar o download do APK do Votômetro e testar o aplicativo diretamente no seu dispositivo Android, [clique aqui para acessar o Google Drive](https://drive.google.com/drive/folders/1WFq98ET-e_lB_-RAiLlHqdyaw1vCZSP2?usp=sharing).
+
+---
+
+## 🛠️ Como Executar o Projeto (Desenvolvedor)
+
+> ⚠️ **Aviso:** O código disponibilizado está sem as chaves de API por motivos de segurança. Antes de iniciar, crie um arquivo `.env` na raiz do projeto e adicione as suas credenciais.
+
+Siga os passos abaixo no seu terminal para rodar o projeto localmente:
+
+1. **Instalar as dependências:**
    ```bash
    npm install
-   ```
 
-2. Start the app
-
+2. **Iniciar o aplicativo (Android):**
    ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+   npx expo run:android
