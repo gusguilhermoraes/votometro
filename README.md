@@ -42,6 +42,6 @@ Siga os passos abaixo no seu terminal para rodar o projeto localmente:
 
 ## 🛠️ Tecnologias Utilizadas
 
-![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Node.js](https://img.shields.io/badge/Node.js-5FA04E?style=for-the-badge&logo=node.js&logoColor=white)
-![Firebase](https://img.shields.io/badge/Firebase-1E1E1E?style=for-the-badge&logo=Firebase&logoColor=DD2C00)
+[![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactnative.dev/)
+[![Node.js](https://img.shields.io/badge/Node.js-5FA04E?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-1E1E1E?style=for-the-badge&logo=Firebase&logoColor=DD2C00)](https://firebase.google.com/)
