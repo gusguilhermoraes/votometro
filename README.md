@@ -6,12 +6,6 @@ Para consultar a documentação completa do projeto, acesse: [gusguilhermoraes/v
 
 ---
 
-## 📱 Como Usar (Usuário)
-
-Para realizar o download do APK do Votômetro e testar o aplicativo diretamente no seu dispositivo Android, [clique aqui para acessar o Google Drive](https://drive.google.com/drive/folders/1WFq98ET-e_lB_-RAiLlHqdyaw1vCZSP2?usp=sharing).
-
----
-
 ## 🛠️ Como Executar o Projeto (Desenvolvedor)
 
 > ⚠️ **Aviso:** O código disponibilizado está sem as chaves de API por motivos de segurança. Antes de iniciar, crie um arquivo `.env` na raiz do projeto e adicione as suas credenciais.
