@@ -8,7 +8,7 @@
 </div>
 
 <p align="center">
-  <a href="#LICENSE"><img src="https://img.shields.io/badge/license-%20%20GNU%20GPLv3%20-green"></a>
+  <a href="https://github.com/gusguilhermoraes/votometro/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-%20%20GNU%20GPLv3%20-green"></a>
 </p>
 
 ## Introdução
