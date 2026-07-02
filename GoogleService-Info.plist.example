@@ -3,21 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>723191179552-4iv7j4ek3gtlor4dkv83n57hhgspdc0s.apps.googleusercontent.com</string>
+	<string>[insira aqui]</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.723191179552-4iv7j4ek3gtlor4dkv83n57hhgspdc0s</string>
+	<string>[insira aqui]</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>[insira aqui]</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBSM5YhVT9XFH0DBktCwGijrxS7emKZxnM</string>
+	<string>[insira aqui]</string>
 	<key>GCM_SENDER_ID</key>
-	<string>723191179552</string>
+	<string>[insira aqui]</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.gusguilhermoraes.votometro</string>
 	<key>PROJECT_ID</key>
-	<string>votometro-adad1</string>
+	<string>[insira aqui]</string>
 	<key>STORAGE_BUCKET</key>
-	<string>votometro-adad1.firebasestorage.app</string>
+	<string>[insira aqui]</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:723191179552:ios:d4589f62fa416cc9e80f45</string>
+	<string>[insira aqui]</string>
 </dict>
 </plist>

@@ -1,53 +1,53 @@
 {
   "project_info": {
-    "project_number": "723191179552",
-    "project_id": "votometro-adad1",
-    "storage_bucket": "votometro-adad1.firebasestorage.app"
+    "project_number": "[insira aqui]",
+    "project_id": "[insira aqui]",
+    "storage_bucket": "[insira aqui]"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:723191179552:android:3c3b01336c0fbee1e80f45",
+        "mobilesdk_app_id": "[insira aqui]",
         "android_client_info": {
           "package_name": "com.gusguilhermoraes.votometro"
         }
       },
       "oauth_client": [
         {
-          "client_id": "723191179552-52v4llrgnnqfff7v25t317hi5nj8j16m.apps.googleusercontent.com",
+          "client_id": "[insira aqui]",
           "client_type": 1,
           "android_info": {
             "package_name": "com.gusguilhermoraes.votometro",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+            "certificate_hash": "[insira o hash SHA-1 da sua assinatura]"
           }
         },
         {
-          "client_id": "723191179552-uhu849715vjp5dilib404ckrtmb0opqm.apps.googleusercontent.com",
+          "client_id": "[insira aqui]",
           "client_type": 1,
           "android_info": {
             "package_name": "com.gusguilhermoraes.votometro",
-            "certificate_hash": "b3b3a5829cd2b88f813c086f73952412ac55d889"
+            "certificate_hash": "[insira o hash SHA-1 da sua assinatura]"
           }
         },
         {
-          "client_id": "723191179552-hg8bjpcmgs8v21m4fhctfrkmbkc78ma8.apps.googleusercontent.com",
+          "client_id": "[insira aqui]",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD5XDSyaEqxPPen1pCeXhhMtpbrw43aomQ"
+          "current_key": "[insira aqui]"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "723191179552-hg8bjpcmgs8v21m4fhctfrkmbkc78ma8.apps.googleusercontent.com",
+              "client_id": "[insira aqui]",
               "client_type": 3
             },
             {
-              "client_id": "723191179552-4iv7j4ek3gtlor4dkv83n57hhgspdc0s.apps.googleusercontent.com",
+              "client_id": "[insira aqui]",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "com.gusguilhermoraes.votometro"
