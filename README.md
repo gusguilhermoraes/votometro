@@ -1,7 +1,7 @@
 <div align="center">
   <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=1000&pause=1000&color=002060&center=true&vCenter=true&repeat=false&width=230&lines=Vot%C3%B4metro" alt="Typing SVG" /></a>
     <br />
-    <a href="https://github.com/gusguilhermoraes/votometro">
+    <a href="https://votometro.lovable.app/">
       <img src="https://github.com/gusguilhermoraes/votometro-documentacao/blob/main/Logotipo/Banner%20-%20Votometro.png" alt="Projeto Votômetro">
     </a>
   </h1>
